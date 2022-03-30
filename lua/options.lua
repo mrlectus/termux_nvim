@@ -1,7 +1,7 @@
 local cmd = vim.cmd
 local opt = vim.opt
 
-cmd[[colorscheme ayu-mirage]]
+cmd[[colorscheme onedark]]
 
 opt.termguicolors = true
 opt.background  = 'dark'

@@ -86,7 +86,8 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 local servers = {
 'tsserver',
-'jsonls'
+'jsonls',
+'clangd'
 }
 
 for _, lsp in ipairs(servers) do

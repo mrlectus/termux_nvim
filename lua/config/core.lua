@@ -6,7 +6,7 @@ require('config.ui.statusline')
 
 -- Tools
 require('config.tools.telescope')
-require('config.tools.tree')
+--require('config.tools.tree')
 require('config.tools.gitsign')
 require('config.tools.treesitter')
 require('config.tools.todo')
@@ -14,6 +14,12 @@ require('config.tools.todo')
 
 -- Lsp
 require('config.lsp')
+require'lspconfig'.pylsp.setup{}
+require'lspconfig'.clangd.setup{}
+require'lspconfig'.eslint.setup{}
+require'lspconfig'.tsserver.setup{}
+require'lspconfig'.gopls.setup{}
+require'lspconfig'.kotlin_language_server.setup{}
 
 -- Misc
 

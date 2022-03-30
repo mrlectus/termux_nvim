@@ -57,8 +57,8 @@ map('v', '<s-tab>', ':bprevious<cr>', s)
 map('n', '<leader>cs', ':PackerSync<cr>', s)
 
 -- Don't Insert in newline
-map('n', 'o', 'o<esc>', s)
-map('n', 'O', 'O<esc>', s)
+--map('n', 'o', 'o<esc>', s)
+--map('n', 'O', 'O<esc>', s)
 
 -- Prevent x from overriding Paste
 map('', 'x', '"_x', s)
@@ -88,7 +88,7 @@ local sn = {noremap = false, silent = true}
 place('n', '<C-x>', ':%y<cr>', sn)
 
 -- disable macros
-place('', 'q', '<Nop>', sn)
+--place('', 'q', '<Nop>', sn)
 
 -- smoothie
 place('', 'ScrollWheelUp', '<C-u>', sn)

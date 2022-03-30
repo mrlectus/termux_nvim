@@ -24,7 +24,7 @@ return require('packer').startup(function(use)
   use 'glepnir/galaxyline.nvim'
 
   --tools
-  use 'kyazdani42/nvim-tree.lua'
+ -- use 'kyazdani42/nvim-tree.lua'
   use 'akinsho/toggleterm.nvim'
   use { 'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/plenary.nvim'},{'kyazdani42/nvim-web-devicons'}} }
 
