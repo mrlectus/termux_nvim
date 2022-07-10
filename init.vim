@@ -3,10 +3,12 @@ call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
 
 " Declare the list of plugins.
 Plug 'tpope/vim-sensible'
+Plug 'simrat39/rust-tools.nvim'
 Plug 'Pocco81/AutoSave.nvim'
 Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-commentary'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -26,7 +28,9 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
 lua << EOF
+require'lspconfig'.rust_analyzer.setup({})
 require'lspconfig'.solidity_ls.setup{}
+require('rust-tools.inlay_hints').set_inlay_hints()
 require'lspconfig'.cssls.setup{}
 require'lspconfig'.html.setup{}
 require'lspconfig'.jsonls.setup{}
@@ -42,15 +46,12 @@ require'lspconfig'.bashls.setup{}
 require'lspconfig'.tsserver.setup{}
 require'lspconfig'.gopls.setup{}
 require'lspconfig'.kotlin_language_server.setup{}
-require'lspconfig'.rust_analyzer.setup({})
-
---autocmd BufWritePre <buffer> <cmd>EslintFixAll<CR>
---require "lsp_signature".setup()
 EOF
 
 " Set shift width to 4 spaces.
 set shiftwidth=2
 set completeopt=menu,menuone,noselect
+set shortmess+=c
 
 " Set tab width to 4 columns.
 set tabstop=2
@@ -179,16 +180,16 @@ cmp.setup({
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ['<CR>'] = cmp.mapping.confirm({behavior = cmp.ConfirmBehavior.Insert, select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
   }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
+    { name = 'path' },
+    { name = 'buffer' },
     { name = 'vsnip' }, -- For vsnip users.
     -- { name = 'luasnip' }, -- For luasnip users.
     -- { name = 'ultisnips' }, -- For ultisnips users.
-    -- { name = 'snippy' }, -- For snippy users.
-  }, {
-    { name = 'buffer' },
+    -- { name = 'snippy' }, -- For snippy users.0
   })
 })
 
@@ -234,7 +235,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 -- Replace <YOUR_LSP_SERVER> with
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'phpactor', 'solc', 'pylsp', 'rust_analyzer', 'solidity_ls', 'tsserver', 'clangd', 'bashls', 'cssls', 'html' }
+local servers = { 'phpactor', 'solc', 'pylsp', 'rust_analyzer', 'solidity_ls', 'tsserver', 'clangd', 'bashls', 'cssls', 'html', 'gopls' }
 
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
@@ -319,3 +320,39 @@ xmap        S   <Plug>(vsnip-cut-text)
 let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
+
+lua <<EOF
+local nvim_lsp = require'lspconfig'
+
+local opts = {
+    tools = { -- rust-tools options
+        autoSetHints = true,
+        hover_with_actions = true,
+        inlay_hints = {
+            show_parameter_hints = false,
+            parameter_hints_prefix = "",
+            other_hints_prefix = "",
+        },
+    },
+
+    -- all the opts to send to nvim-lspconfig
+    -- these override the defaults set by rust-tools.nvim
+    -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
+    server = {
+        -- on_attach is a callback called when the language server attachs to the buffer
+        -- on_attach = on_attach,
+        settings = {
+            -- to enable rust-analyzer settings visit:
+            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+            ["rust-analyzer"] = {
+                -- enable clippy on save
+                checkOnSave = {
+                    command = "clippy"
+                },
+            }
+        }
+    },
+}
+
+require('rust-tools').setup(opts)
+EOF
