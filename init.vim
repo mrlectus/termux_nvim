@@ -1,38 +1,54 @@
 " Plugins will be downloaded under the specified directory.
 call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
-
+let g:mapleader = "\<Space>"
 " Declare the list of plugins.
-Plug 'tpope/vim-sensible'
-Plug 'simrat39/rust-tools.nvim'
-Plug 'Pocco81/AutoSave.nvim'
-Plug 'junegunn/seoul256.vim'
+"Plug 'hrsh7th/nvim-compe'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'tpope/vim-commentary'
+Plug 'ray-x/aurora'
+Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
+Plug 'tjdevries/nlua.nvim'
+Plug 'folke/lua-dev.nvim'
+Plug 'dcampos/cmp-snippy'
+Plug 'dcampos/nvim-snippy'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
+Plug 'kyazdani42/nvim-web-devicons' " lua
+Plug 'kyoz/purify', { 'rtp': 'vim' }
+Plug 'mattn/emmet-vim'
 Plug 'neovim/nvim-lspconfig'
-Plug 'ray-x/lsp_signature.nvim'
-"Plug 'hrsh7th/nvim-compe'
-Plug 'dcampos/nvim-snippy'
-Plug 'dcampos/cmp-snippy'
-Plug 'navarasu/onedark.nvim'
-Plug 'udalov/kotlin-vim'
+Plug 'nvim-lualine/lualine.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
+Plug 'ray-x/lsp_signature.nvim'
+Plug 'ryanoasis/vim-devicons'       " vimscript
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-sensible'
+Plug 'udalov/kotlin-vim'
 " List ends here. Plugins become visible to Vim after this call.
+
 call plug#end()
+let g:python3_host_prog = '/data/data/com.termux/files/usr/bin/python' 
+let g:ruby_host_prog = '/data/data/com.termux/files/usr/lib/ruby/gems/3.1.0/gems/neovim-0.9.0/exe/neovim-ruby-host'
+let g:node_host_prog = '/data/data/com.termux/files/usr/bin/neovim-node-host'
+let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
 lua << EOF
+--require('go_run')
 require'lspconfig'.rust_analyzer.setup({})
+require'lspconfig'.emmet_ls.setup{}
+require'lspconfig'.sumneko_lua.setup{}
+require('auto-save')
+require'lspconfig'.vimls.setup{}
+require'lspconfig'.remark_ls.setup{}
 require'lspconfig'.solidity_ls.setup{}
-require('rust-tools.inlay_hints').set_inlay_hints()
 require'lspconfig'.cssls.setup{}
-require'lspconfig'.html.setup{}
+require'lspconfig'.html.setup{
+  filetypes = {"html", "php"}
+}
 require'lspconfig'.jsonls.setup{}
 require'lspconfig'.yamlls.setup{}
 require'lspconfig'.tailwindcss.setup{}
@@ -46,20 +62,37 @@ require'lspconfig'.bashls.setup{}
 require'lspconfig'.tsserver.setup{}
 require'lspconfig'.gopls.setup{}
 require'lspconfig'.kotlin_language_server.setup{}
+require('lualine').setup{}
+require('./evil_lualine')
 EOF
+" enable 24bit true color
+ if (has("termguicolors"))
+   set termguicolors
+endif
 
-" Set shift width to 4 spaces.
+ " enable the theme
+syntax enable
+" Set shift width to 2 spaces.
 set shiftwidth=2
 set completeopt=menu,menuone,noselect
+set splitright
 set shortmess+=c
 
-" Set tab width to 4 columns.
+" Set tab width to 2 columns.
 set tabstop=2
+set autoindent
+set smartindent
+set softtabstop=2
+set smarttab
 syntax on
 " Use space characters instead of tabs.
 set expandtab
-" colorscheme onedark
-colorscheme seoul256
+" colorscheme purify
+let g:aurora_italic = 1     " italic
+let g:aurora_transparent = 1     " transparent
+let g:aurora_bold = 1     " bold
+
+colorscheme aurora
 set background=dark
 " Do not save backup files.
 set nobackup
@@ -97,35 +130,17 @@ set hlsearch
 set number
 " Set the commands to save in history default number is 20.
 set history=1000
-"let g:compe = {}
-"let g:compe.enabled = v:true
-"let g:compe.autocomplete = v:true
-"let g:compe.debug = v:false
-"let g:compe.min_length = 1
-"let g:compe.preselect = 'enable'
-"let g:compe.throttle_time = 80
-"let g:compe.source_timeout = 100
-"let g:compe.resolve_timeout = 800
-"let g:compe.incomplete_delay = 400
-"let g:compe.max_abbr_width = 100
-"let g:compe.max_kind_width = 100
-"let g:compe.max_menu_width = 100
-"let g:compe.documentation = v:true
-"
-"let g:compe.source = {}
-"let g:compe.source.path = v:true
-"let g:compe.source.buffer = v:true
-"let g:compe.source.calc = v:true
-"let g:compe.source.nvim_lsp = v:true
-"let g:compe.source.nvim_lua = v:true
-"let g:compe.source.vsnip = v:true
-"let g:compe.source.ultisnips = v:true
-"let g:compe.source.luasnip = v:true
-"let g:compe.source.emoji = v:true
+set hidden
+set lazyredraw
+set undolevels=5000     " set maximum undo levels
+set list
+set listchars=tab:•·,trail:·,extends:❯,precedes:❮,nbsp:×
+set viminfo=!,h,f1,'100
+set colorcolumn=80 
+highlight! ColorColumn ctermbg=233 guibg=#131313
 
 lua << EOF
 local nvim_lsp = require('lspconfig')
-
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
@@ -155,7 +170,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
-  buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.format { async = true }<CR>', opts)
 end
 
 -- Setup nvim-cmp.
@@ -235,7 +250,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 -- Replace <YOUR_LSP_SERVER> with
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'phpactor', 'solc', 'pylsp', 'rust_analyzer', 'solidity_ls', 'tsserver', 'clangd', 'bashls', 'cssls', 'html', 'gopls' }
+local servers = { 'sumneko_lua', 'phpactor', 'solc', 'vimls', 'pylsp', 'rust_analyzer', 'solidity_ls', 'tsserver', 'clangd', 'bashls', 'cssls', 'html', 'gopls', 'tailwindcss', 'jsonls'}
 
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
@@ -246,26 +261,8 @@ for _, lsp in ipairs(servers) do
     }
 }
 end
-local autosave = require("autosave")
-
-autosave.setup(
-    {
-        enabled = true,
-        execution_message = "AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"),
-        events = {"InsertLeave", "TextChanged"},
-        conditions = {
-            exists = true,
-            filename_is_not = {},
-            filetype_is_not = {},
-            modifiable = true
-        },
-        write_all_buffers = false,
-        on_off_commands = true,
-        clean_command_line_interval = 0,
-        debounce_delay = 135
-    }
-)
 EOF
+
 autocmd BufReadPost *
   \ if line("'\"") >= 1 && line("'\"") <= line("$") |
   \   exe "normal! g`\"" |
@@ -320,39 +317,10 @@ xmap        S   <Plug>(vsnip-cut-text)
 let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
+let g:user_emmet_expandabbr_key = '<c-e>'
 
-lua <<EOF
-local nvim_lsp = require'lspconfig'
-
-local opts = {
-    tools = { -- rust-tools options
-        autoSetHints = true,
-        hover_with_actions = true,
-        inlay_hints = {
-            show_parameter_hints = false,
-            parameter_hints_prefix = "",
-            other_hints_prefix = "",
-        },
-    },
-
-    -- all the opts to send to nvim-lspconfig
-    -- these override the defaults set by rust-tools.nvim
-    -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
-    server = {
-        -- on_attach is a callback called when the language server attachs to the buffer
-        -- on_attach = on_attach,
-        settings = {
-            -- to enable rust-analyzer settings visit:
-            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-            ["rust-analyzer"] = {
-                -- enable clippy on save
-                checkOnSave = {
-                    command = "clippy"
-                },
-            }
-        }
-    },
-}
-
-require('rust-tools').setup(opts)
-EOF
+nnoremap <silent> <leader>gt :GFiles<CR>
+nnoremap <silent> <leader>gg :Rg<CR>
+nnoremap <silent> <leader>ag :Ag<CR>
+nnoremap <silent> <leader>bb :Buffers<CR>
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR><Esc>
