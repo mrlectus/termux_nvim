@@ -4,9 +4,9 @@ let g:mapleader = "\<Space>"
 " Declare the list of plugins.
 "Plug 'hrsh7th/nvim-compe'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'olimorris/onedarkpro.nvim'   " Vim-Plug
 Plug 'junegunn/fzf.vim'
 Plug 'ray-x/aurora'
-Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
 Plug 'tjdevries/nlua.nvim'
 Plug 'folke/lua-dev.nvim'
 Plug 'dcampos/cmp-snippy'
@@ -28,7 +28,6 @@ Plug 'ray-x/lsp_signature.nvim'
 Plug 'ryanoasis/vim-devicons'       " vimscript
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-sensible'
-Plug 'udalov/kotlin-vim'
 " List ends here. Plugins become visible to Vim after this call.
 
 call plug#end()
@@ -42,6 +41,7 @@ require'lspconfig'.rust_analyzer.setup({})
 require'lspconfig'.emmet_ls.setup{}
 require'lspconfig'.sumneko_lua.setup{}
 require('auto-save')
+require'lspconfig'.pylsp.setup{}
 require'lspconfig'.vimls.setup{}
 require'lspconfig'.remark_ls.setup{}
 require'lspconfig'.solidity_ls.setup{}
@@ -55,7 +55,6 @@ require'lspconfig'.tailwindcss.setup{}
 require'lspconfig'.awk_ls.setup{}
 --require'lspconfig'.solc.setup{}
 require'lspconfig'.phpactor.setup{}
-require'lspconfig'.pylsp.setup{}
 require'lspconfig'.clangd.setup{}
 require'lspconfig'.eslint.setup{}
 require'lspconfig'.bashls.setup{}
@@ -87,19 +86,18 @@ set smarttab
 syntax on
 " Use space characters instead of tabs.
 set expandtab
-" colorscheme purify
-let g:aurora_italic = 1     " italic
-let g:aurora_transparent = 1     " transparent
-let g:aurora_bold = 1     " bold
-
-colorscheme aurora
+colorscheme onedarkpro
 set background=dark
+
 " Do not save backup files.
 set nobackup
-set noswapfile  
+set noswapfile
+set undofile
 set nowrap
 set relativenumber
 set foldmethod=expr
+set foldlevel=1
+set foldclose=all
 set foldexpr=nvim_treesitter#foldexpr()
 
 " Do not let cursor scroll below or above N number of lines when scrolling.
@@ -245,12 +243,39 @@ require'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = false,
   },
 }
+
+require("onedarkpro").setup({
+  dark_theme = "onedark_dark",
+  light_theme = "onelight",
+  theme = "onedark_dark",
+  styles = { -- Choose from "bold,italic,underline"
+      strings = "bold", -- Style that is applied to strings.
+      comments = "italic", -- Style that is applied to comments
+      keywords = "italic", -- Style that is applied to keywords
+      functions = "bold, italic", -- Style that is applied to functions
+      variables = "NONE", -- Style that is applied to variables
+      virtual_text = "italic", -- Style that is applied to virtual text
+  },
+  options = {
+      bold = true, -- Use the colorscheme's opinionated bold styles?
+      italic = true, -- Use the colorscheme's opinionated italic styles?
+      underline = true, -- Use the colorscheme's opinionated underline styles?
+      undercurl = true, -- Use the colorscheme's opinionated undercurl styles?
+      cursorline = true, -- Use cursorline highlighting?
+      transparency = false, -- Use a transparent background?
+      terminal_colors = true, -- Use the colorscheme's colors for Neovim's :terminal?
+      window_unfocused_color = true, -- When the window is out of focus, change the normal background?
+},
+plugins = {
+    all = true
+  }
+})
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- Replace <YOUR_LSP_SERVER> with
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'sumneko_lua', 'phpactor', 'solc', 'vimls', 'pylsp', 'rust_analyzer', 'solidity_ls', 'tsserver', 'clangd', 'bashls', 'cssls', 'html', 'gopls', 'tailwindcss', 'jsonls'}
+local servers = { 'sumneko_lua', 'phpactor', 'solc', 'vimls', 'pylsp', 'rust_analyzer', 'solidity_ls', 'tsserver', 'clangd', 'bashls', 'cssls', 'html', 'gopls', 'tailwindcss', 'jsonls', 'yamlls' }
 
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {

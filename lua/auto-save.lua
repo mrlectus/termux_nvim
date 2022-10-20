@@ -885,7 +885,6 @@ local extensions = {
   "*.tu",
   "*.twig",
   "*.txl",
-  "*.txt",
   "*.uc",
   "*.udf",
   "*.ui",
@@ -1004,9 +1003,11 @@ local extensions = {
   "*.zpl",
   "*.zsh",
 }
-vim.api.nvim_create_autocmd("InsertLeave", {
+
+-- local bufnr = vim.api.nvim_get_current_buf()
+vim.api.nvim_create_autocmd({ "InsertLeave", "BufLeave", "QuitPre", "TabLeave", "WinLeave", "TextChanged" }, {
   pattern = extensions,
   callback = function()
-    vim.cmd("write")
+      vim.cmd("write")
   end
 });
